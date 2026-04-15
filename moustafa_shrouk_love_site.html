@@ -1,0 +1,254 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  #universe { min-height:100vh; background:#0a0010; overflow:hidden; position:relative; font-family:'Lato',sans-serif; }
+  canvas#stars { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; }
+  .scene { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; padding:60px 20px 80px; gap:60px; }
+  .heart-3d { font-size:90px; line-height:1; display:inline-block; animation:float 3s ease-in-out infinite; filter:drop-shadow(0 0 30px #ff4d8d88); }
+  @keyframes float { 0%,100%{transform:translateY(0) scale(1);} 50%{transform:translateY(-18px) scale(1.07);} }
+  .title { font-family:'Playfair Display',serif; font-size:clamp(2.4rem,7vw,4.5rem); color:#fff; letter-spacing:2px; margin-top:18px; text-shadow:0 0 40px #ff4d8d99; }
+  .subtitle { font-size:1rem; color:#e0a8c8; letter-spacing:4px; text-transform:uppercase; margin-top:10px; }
+  .divider { width:120px; height:1px; background:linear-gradient(90deg,transparent,#ff4d8d,transparent); margin:20px auto 0; }
+  .glass { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.12); border-radius:24px; backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); padding:36px 40px; width:100%; max-width:640px; text-align:center; box-shadow:0 8px 60px rgba(255,77,141,0.08); transition:transform 0.35s ease,box-shadow 0.35s ease; }
+  .glass:hover { transform:translateY(-6px); box-shadow:0 16px 70px rgba(255,77,141,0.18); }
+  .card-label { font-size:0.72rem; letter-spacing:5px; text-transform:uppercase; color:#ff4d8d; margin-bottom:14px; }
+  .timer-grid { display:flex; justify-content:center; gap:20px; flex-wrap:wrap; margin-top:6px; }
+  .unit-box { display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .unit-num { font-family:'Playfair Display',serif; font-size:clamp(2rem,6vw,3.2rem); color:#fff; line-height:1; background:rgba(255,77,141,0.12); border:1px solid rgba(255,77,141,0.3); border-radius:14px; padding:12px 18px; min-width:80px; text-align:center; text-shadow:0 0 20px #ff4d8d66; }
+  .unit-label { font-size:0.65rem; letter-spacing:3px; color:#e0a8c8; text-transform:uppercase; }
+  .dates-row { display:flex; gap:20px; justify-content:center; flex-wrap:wrap; width:100%; max-width:640px; }
+  .date-card { flex:1; min-width:230px; }
+  .date-icon { font-size:2.2rem; margin-bottom:10px; line-height:1; }
+  .date-name { font-family:'Playfair Display',serif; font-size:1.25rem; color:#fff; margin-bottom:4px; }
+  .date-val { font-size:0.95rem; color:#e0a8c8; }
+  .love-note { font-family:'Playfair Display',serif; font-style:italic; font-size:clamp(1rem,2.5vw,1.2rem); color:#f2d6e8; line-height:1.9; max-width:520px; margin:0 auto; text-shadow:0 0 20px rgba(255,100,150,0.3); }
+  .rose { position:fixed; font-size:22px; pointer-events:none; animation:riseUp linear infinite; z-index:0; opacity:0; }
+  @keyframes riseUp { 0%{transform:translateY(100vh) rotate(0deg);opacity:0;} 10%{opacity:0.8;} 90%{opacity:0.5;} 100%{transform:translateY(-120px) rotate(360deg);opacity:0;} }
+  .stat-row { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+  .stat { display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .stat-num { font-family:'Playfair Display',serif; font-size:1.8rem; color:#ff4d8d; text-shadow:0 0 14px #ff4d8d55; }
+  .stat-txt { font-size:0.7rem; color:#e0a8c8; letter-spacing:2px; text-transform:uppercase; }
+  .sig { font-family:'Playfair Display',serif; font-size:1.1rem; color:#e0a8c8; letter-spacing:1px; }
+  .orb { position:fixed; border-radius:50%; filter:blur(80px); pointer-events:none; z-index:0; animation:driftOrb ease-in-out infinite; }
+  .orb1 { width:350px; height:350px; background:rgba(200,30,100,0.18); top:-80px; left:-80px; animation-duration:14s; }
+  .orb2 { width:280px; height:280px; background:rgba(120,20,200,0.15); bottom:0; right:-60px; animation-duration:18s; animation-delay:-7s; }
+  .orb3 { width:200px; height:200px; background:rgba(255,100,50,0.10); top:45%; left:50%; animation-duration:22s; animation-delay:-3s; }
+  @keyframes driftOrb { 0%,100%{transform:translate(0,0);} 33%{transform:translate(30px,-20px);} 66%{transform:translate(-20px,30px);} }
+  .memory-box { background:rgba(255,77,141,0.06); border:1px solid rgba(255,77,141,0.2); border-radius:16px; padding:20px 24px; margin-top:16px; }
+  .memory-text { font-size:0.95rem; color:#f2d6e8; line-height:1.8; }
+  .countdown-mini { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-top:10px; }
+  .mini-unit { display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .mini-num { font-family:'Playfair Display',serif; font-size:1.6rem; color:#ff4d8d; }
+  .mini-label { font-size:0.6rem; letter-spacing:3px; color:#e0a8c8; text-transform:uppercase; }
+  .age-badge { display:inline-block; background:rgba(255,77,141,0.12); border:1px solid rgba(255,77,141,0.25); border-radius:20px; padding:4px 14px; font-size:0.8rem; color:#ff4d8d; margin-top:6px; }
+</style>
+
+<div id="universe">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <canvas id="stars"></canvas>
+
+  <div class="scene">
+
+    <!-- Hero -->
+    <div class="hero" style="text-align:center;">
+      <div class="heart-3d">🌹</div>
+      <h1 class="title">Moustafa &amp; Shrouk</h1>
+      <p class="subtitle">A love story written in the stars</p>
+      <div class="divider"></div>
+    </div>
+
+    <!-- Main Timer -->
+    <div class="glass">
+      <p class="card-label">💬 &nbsp; Since our first conversation</p>
+      <p style="font-size:0.8rem;color:#e0a8c8;margin-bottom:16px;">28 February 2026 — the day everything changed</p>
+      <div class="timer-grid">
+        <div class="unit-box">
+          <div class="unit-num" id="t-days">000</div>
+          <div class="unit-label">Days</div>
+        </div>
+        <div class="unit-box">
+          <div class="unit-num" id="t-hours">00</div>
+          <div class="unit-label">Hours</div>
+        </div>
+        <div class="unit-box">
+          <div class="unit-num" id="t-mins">00</div>
+          <div class="unit-label">Minutes</div>
+        </div>
+        <div class="unit-box">
+          <div class="unit-num" id="t-secs">00</div>
+          <div class="unit-label">Seconds</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- First meeting memory -->
+    <div class="glass">
+      <p class="card-label">✨ &nbsp; Where it all started</p>
+      <div class="memory-box">
+        <p class="memory-text">
+          It was a Statistics 1 quiz lecture — Semester 2, 2025.<br>
+          Out of every seat in every room in the world,<br>
+          the universe decided to put us in the same one.<br><br>
+          <span style="color:#ff4d8d;font-style:italic;">"The best things in life are never planned."</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Birthdays -->
+    <div class="dates-row">
+      <div class="glass date-card">
+        <div class="date-icon">🌸</div>
+        <p class="card-label">Her Birthday</p>
+        <p class="date-name">Shrouk</p>
+        <p class="date-val">24 November 2005</p>
+        <div class="age-badge" id="shrouk-age">Loading...</div>
+        <p style="font-size:0.75rem;color:#e0a8c8;margin-top:10px;" id="shrouk-next"></p>
+      </div>
+      <div class="glass date-card">
+        <div class="date-icon">🌟</div>
+        <p class="card-label">His Birthday</p>
+        <p class="date-name">Moustafa</p>
+        <p class="date-val">7 November 2005</p>
+        <div class="age-badge" id="him-age">Loading...</div>
+        <p style="font-size:0.75rem;color:#e0a8c8;margin-top:10px;" id="him-next"></p>
+      </div>
+    </div>
+
+    <!-- Love stats -->
+    <div class="glass">
+      <p class="card-label">💫 &nbsp; Our numbers</p>
+      <div class="stat-row" style="margin-top:6px;">
+        <div class="stat">
+          <span class="stat-num" id="stat-weeks">0</span>
+          <span class="stat-txt">Weeks</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num" id="stat-hrs">0</span>
+          <span class="stat-txt">Hours since day 1</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">2</span>
+          <span class="stat-txt">Born same year</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">∞</span>
+          <span class="stat-txt">Reasons I love you</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Love note -->
+    <div class="glass">
+      <p class="card-label">✉️ &nbsp; A note from Moustafa</p>
+      <p class="love-note">
+        "Every day I talk to you feels like the universe<br>
+        decided to be kind to me.<br><br>
+        You are my favourite notification,<br>
+        my favourite voice,<br>
+        and the most beautiful coincidence<br>
+        of my entire life."
+      </p>
+    </div>
+
+    <!-- Signature -->
+    <div class="glass" style="max-width:320px; padding:28px;">
+      <p class="card-label">Made with love</p>
+      <p class="sig">Only for you, Shrouk 🌹</p>
+      <p style="font-size:0.75rem;color:#e0a8c8;margin-top:8px;">— Moustafa</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('stars');
+const ctx = canvas.getContext('2d');
+let stars = [];
+function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+resize();
+window.addEventListener('resize', () => { resize(); initStars(); });
+function initStars() {
+  stars = [];
+  const n = Math.floor((canvas.width * canvas.height) / 3000);
+  for (let i = 0; i < n; i++) {
+    stars.push({ x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*1.4+0.3, speed:Math.random()*0.006+0.002, phase:Math.random()*Math.PI*2 });
+  }
+}
+initStars();
+function drawStars(ts) {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  stars.forEach(s => {
+    const alpha = 0.3 + 0.7*Math.abs(Math.sin(ts*s.speed+s.phase));
+    ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle = `rgba(255,230,245,${alpha})`; ctx.fill();
+  });
+  requestAnimationFrame(drawStars);
+}
+requestAnimationFrame(drawStars);
+
+const emojis = ['🌹','💗','✨','🌸','💕','⭐'];
+function spawnRose() {
+  const el = document.createElement('div');
+  el.className = 'rose';
+  el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+  el.style.left = Math.random()*98+'vw';
+  const dur = 7+Math.random()*10;
+  el.style.animationDuration = dur+'s';
+  el.style.animationDelay = Math.random()*5+'s';
+  document.getElementById('universe').appendChild(el);
+  setTimeout(() => el.remove(), (dur+6)*1000);
+}
+for (let i=0;i<12;i++) setTimeout(spawnRose, i*800);
+setInterval(spawnRose, 2000);
+
+const START_DATE   = new Date('2026-02-28T00:00:00');
+const SHROUK_BDAY  = { day:24, month:11, year:2005 };
+const HIM_BDAY     = { day:7,  month:11, year:2005 };
+
+function getAge(bday) {
+  const now = new Date();
+  let age = now.getFullYear() - bday.year;
+  if (now.getMonth()+1 < bday.month || (now.getMonth()+1 === bday.month && now.getDate() < bday.day)) age--;
+  return age;
+}
+
+function daysUntilNext(bday) {
+  const now = new Date();
+  let next = new Date(now.getFullYear(), bday.month-1, bday.day);
+  if (next <= now) next = new Date(now.getFullYear()+1, bday.month-1, bday.day);
+  return Math.ceil((next - now) / 86400000);
+}
+
+document.getElementById('shrouk-age').textContent = getAge(SHROUK_BDAY) + ' years old';
+document.getElementById('him-age').textContent    = getAge(HIM_BDAY) + ' years old';
+
+const sd = daysUntilNext(SHROUK_BDAY);
+const hd = daysUntilNext(HIM_BDAY);
+document.getElementById('shrouk-next').textContent = sd === 0 ? '🎂 Happy Birthday Shrouk!' : sd + ' days until her next birthday';
+document.getElementById('him-next').textContent    = hd === 0 ? '🎂 Happy Birthday Moustafa!' : hd + ' days until his next birthday';
+
+function tick() {
+  const now  = new Date();
+  const diff = now - START_DATE;
+  if (diff < 0) return;
+  const totalSecs  = Math.floor(diff/1000);
+  const secs       = totalSecs%60;
+  const totalMins  = Math.floor(totalSecs/60);
+  const mins       = totalMins%60;
+  const totalHours = Math.floor(totalMins/60);
+  const hours      = totalHours%24;
+  const days       = Math.floor(totalHours/24);
+  const weeks      = Math.floor(days/7);
+  document.getElementById('t-days').textContent  = String(days).padStart(3,'0');
+  document.getElementById('t-hours').textContent = String(hours).padStart(2,'0');
+  document.getElementById('t-mins').textContent  = String(mins).padStart(2,'0');
+  document.getElementById('t-secs').textContent  = String(secs).padStart(2,'0');
+  document.getElementById('stat-weeks').textContent = weeks;
+  document.getElementById('stat-hrs').textContent   = totalHours.toLocaleString();
+}
+tick();
+setInterval(tick, 1000);
+</script>
